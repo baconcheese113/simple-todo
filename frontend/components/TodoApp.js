@@ -1,10 +1,19 @@
 import React from 'react';
+import styled from 'styled-components';
 import FetchApi from '../fetch-api';
+import Console from './Console';
+import TaskItem from './TaskItem';
 
 const ENTER_KEY_CODE = 13;
 
+const StyledTodoApp = styled.div`
+  font-size: 62.5%; /* Setting to 10px so I can use rem with dumb math */
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
 export default class TodoApp extends React.Component {
-  state = { todos: [], newText: '' };
+  state = { todos: [] };
 
   constructor(props) {
     super(props);
@@ -17,12 +26,12 @@ export default class TodoApp extends React.Component {
       .catch(() => alert('There was an error getting todos'));
   };
 
-  createTodo = () => {
-    FetchApi.post('/todo', { text: this.state.newText })
+  createTodo = (todo) => {
+    FetchApi.post('/todo', todo)
       .then((newTodo) => {
         const newTodos = Array.from(this.state.todos);
         newTodos.push(newTodo);
-        this.setState({ todos: newTodos, newText: '' });
+        this.setState({ todos: newTodos });
       })
       .catch(() => alert('There was an error creating the todo'));
   };
@@ -38,53 +47,38 @@ export default class TodoApp extends React.Component {
       .catch(() => alert('Error removing todo'));
   };
 
-  handleUpdateRequest = (id) => {
-    const text = this.state.newText.length > 0 ? this.state.newText : undefined;
+  handleUpdateRequest = (id, todo) => {
+    const text = todo.text.length > 0 ? todo.text : undefined;
     FetchApi.put(`/todo/${id}`, { text, isCompleted: true })
       .then((newTodo) => {
         const newTodos = Array.from(this.state.todos);
         newTodos[newTodos.findIndex((todo) => todo.id === id)] = newTodo;
-        this.setState({ todos: newTodos, newText: '' });
+        this.setState({ todos: newTodos });
       })
       .catch(() => alert('There was an error updating the todo'));
   };
 
-  handleChange = (e) => {
-    this.setState({ newText: e.target.value });
-  };
+  // handleChange = (e) => {
+  //   this.setState({ newText: e.target.value });
+  // };
 
-  handleKeyDown = (e) => {
-    if (e.keyCode !== ENTER_KEY_CODE) return;
-    this.createTodo();
-  };
+  // handleKeyDown = (e) => {
+  //   if (e.keyCode !== ENTER_KEY_CODE) return;
+  //   this.createTodo();
+  // };
 
   render() {
     return (
-      <div>
-        <h1>todos</h1>
-        <input
-          autoFocus
-          onChange={this.handleChange}
-          onKeyDown={this.handleKeyDown}
-          placeholder="What needs to be done?"
-          value={this.state.newText}
-        />
+      <StyledTodoApp>
+        <Console createTodo={this.createTodo} />
         <ul>
           {this.state.todos.map((todo) => (
             <li key={todo.id}>
-              <div className="view">
-                <label>{`${todo.text} is ${todo.isCompleted ? '' : 'not'} completed`}</label>
-                <button type="button" onClick={() => this.handleUpdateRequest(todo.id)}>
-                  Finish Todo
-                </button>
-                <button type="button" onClick={() => this.handleDeleteRequest(todo.id)}>
-                  Remove Todo
-                </button>
-              </div>
+              <TaskItem todo={todo} updateItem={this.handleUpdateRequest} deleteItem={this.handleDeleteRequest} />
             </li>
           ))}
         </ul>
-      </div>
+      </StyledTodoApp>
     );
   }
 }

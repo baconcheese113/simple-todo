@@ -1,0 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style-type: none;
+  text-decoration: none;
+}
+
+html {
+  font-size: 62.5%;
+  font-family: 'Creepster', sans-serif;
+}
+
+body {
+  background-image: linear-gradient(#181818, #3f3f3f 30%);
+  min-height: 100vh;
+  color: white;
+  text-align: center;
+}
