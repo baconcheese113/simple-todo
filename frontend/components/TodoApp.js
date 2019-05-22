@@ -13,7 +13,7 @@ const StyledTodoApp = styled.div`
 `;
 
 export default class TodoApp extends React.Component {
-  state = { todos: [] };
+  state = { todos: [], showAlive: true };
 
   constructor(props) {
     super(props);
@@ -48,8 +48,9 @@ export default class TodoApp extends React.Component {
   };
 
   handleUpdateRequest = (id, todo) => {
-    const text = todo.text.length > 0 ? todo.text : undefined;
-    FetchApi.put(`/todo/${id}`, { text, isCompleted: true })
+    const { text, isCompleted } = todo;
+    // const text = todo.text.length > 0 ? todo.text : undefined;
+    FetchApi.put(`/todo/${id}`, { text, isCompleted })
       .then((newTodo) => {
         const newTodos = Array.from(this.state.todos);
         newTodos[newTodos.findIndex((todo) => todo.id === id)] = newTodo;
@@ -70,13 +71,19 @@ export default class TodoApp extends React.Component {
   render() {
     return (
       <StyledTodoApp>
-        <Console createTodo={this.createTodo} />
+        <Console
+          createTodo={this.createTodo}
+          showAlive={this.state.showAlive}
+          setShowAlive={(showAlive) => this.setState({ showAlive })}
+        />
         <ul>
-          {this.state.todos.map((todo) => (
-            <li key={todo.id}>
-              <TaskItem todo={todo} updateItem={this.handleUpdateRequest} deleteItem={this.handleDeleteRequest} />
-            </li>
-          ))}
+          {this.state.todos
+            .filter((todo) => todo.isCompleted !== this.state.showAlive)
+            .map((todo) => (
+              <li key={todo.id}>
+                <TaskItem todo={todo} updateItem={this.handleUpdateRequest} deleteItem={this.handleDeleteRequest} />
+              </li>
+            ))}
         </ul>
       </StyledTodoApp>
     );

@@ -9,6 +9,7 @@ const wiggle = keyframes`
 `;
 
 const StyledConsole = styled.div`
+  position: relative;
   width: 100%;
   height: 20vh;
   background-image: linear-gradient(to bottom right, #313131, #111 60%);
@@ -55,26 +56,65 @@ const NewTaskButton = styled.button`
   box-shadow: 0 0 1rem #fff;
 `;
 
+const Tombstone = styled.button`
+  position: absolute;
+  margin: 0 5rem;
+  padding: 4rem 1.5rem;
+  font: inherit;
+  font-size: 2rem;
+  border-radius: 5rem 5rem 0 0;
+  border: 0.3rem solid grey;
+  border-bottom: 0.4rem solid #774d2c;
+  bottom: 0;
+  left: ${(props) => props.left};
+  right: ${(props) => props.right};
+  cursor: pointer;
+  overflow: hidden;
+
+  i {
+    position: absolute;
+    font-size: 3rem;
+    bottom: ${(props) => (props.active ? '2%' : '-30%')};
+    left: 0;
+    right: 0;
+    transition: all 2s;
+  }
+
+  &:hover i {
+    bottom: 2%;
+  }
+`;
+
 const Console = (props) => {
-  const { createTodo } = props;
+  const { createTodo, showAlive, setShowAlive } = props;
 
   const [newTask, setNewTask] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newTask.length > 0) {
-      createTodo({ text: newTask });
+      createTodo({ text: newTask, isCompleted: false });
       setNewTask('');
     }
   };
+
+  // TODO: Strike through Done/In-progress and absolutely position Dead/Living below to make interface more intuitive
 
   return (
     <StyledConsole>
       <Title>Till Death To We Do</Title>
       <NewTaskForm onSubmit={(e) => handleSubmit(e)}>
-        <NewTaskInput value={newTask} onChange={(e) => setNewTask(e.target.value)} placeholder="Enter your soul" />
+        <NewTaskInput value={newTask} onChange={(e) => setNewTask(e.target.value)} placeholder="Enter a new soul" />
         <NewTaskButton>Create</NewTaskButton>
       </NewTaskForm>
+      <Tombstone left="0" active={showAlive} onClick={() => setShowAlive(true)}>
+        View the Living
+        <i className="fas fa-flushed" />
+      </Tombstone>
+      <Tombstone right="0" active={!showAlive} onClick={() => setShowAlive(false)}>
+        View the Dead
+        <i className="fas fa-dizzy" />
+      </Tombstone>
     </StyledConsole>
   );
 };
