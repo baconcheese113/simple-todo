@@ -1,9 +1,9 @@
 let todosCreated = 1;
-const todos = [
+let todos = [
   {
     id: 1,
     text: 'Finish coding exercise',
-    isCompleted: false
+    isCompleted: true
   }
 ];
 
