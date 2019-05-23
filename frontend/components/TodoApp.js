@@ -13,7 +13,7 @@ const StyledTodoApp = styled.div`
 `;
 
 export default class TodoApp extends React.Component {
-  state = { todos: [], showAlive: true };
+  state = { todos: [], showAlive: false };
 
   constructor(props) {
     super(props);
